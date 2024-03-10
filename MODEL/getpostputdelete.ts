@@ -22,4 +22,5 @@ export interface VoteModel {
     imid:      number;
     timestamp: Date;
     status:    number;
+    score:    number;
 }

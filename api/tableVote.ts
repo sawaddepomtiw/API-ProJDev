@@ -22,11 +22,12 @@ router.post("/insertVote", (req, res) => {
     if (req.query){
 
         const vote: VoteModel = req.body;
-        let sql = "INSERT INTO vote(uid, imid, status) VALUES (?,?,?)";
+        let sql = "INSERT INTO vote(uid, imid, status, score) VALUES (?,?,?,?)";
         sql = mysql.format(sql, [
             vote.uid,
             vote.imid,
-            vote.status
+            vote.status,
+            vote.score
         ]);
         dbconn.query(sql, (err, result) =>{
             if (err) throw err;

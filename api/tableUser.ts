@@ -1,5 +1,5 @@
 import express from "express";
-import { dbconn } from "../dbconnects";
+import { dbconn, queryPromise } from "../dbconnects";
 import { User } from "../MODEL/getpostputdelete";
 import mysql from "mysql";
 
@@ -42,4 +42,35 @@ router.post("/post-TableUser", (req, res) => {
     } else {
         res.status(201).send("error!");
     }
+});
+
+router.put("/put-TableUser/:id",async(req, res)=>{
+    //1 
+    const id = req.params.id; //ตัวแปรโง่
+    let user : User = req.body; //อีกตัว
+
+    //Query original data by id
+    let UserModel : User | undefined;
+    let sql = mysql.format("select * from user where imid = ?",[id]);
+    let result = await queryPromise(sql);
+    const jsonStr = JSON.stringify(result);
+    const jsonObj = JSON.parse(jsonStr);
+    const rawData = jsonObj;
+    UserModel = rawData[0];
+
+    //merge recive
+    const updateUser = {...UserModel, ...user};
+    sql ="update `user` set `profile`= ? where `imid`= ?";
+
+    //update
+    sql = mysql.format(sql, [
+        updateUser.profile, id
+    ]);
+    dbconn.query(sql, (err, result)=>{
+        if (err) throw err;
+        res.status(200).json({
+            affected_row: result.affectedRows
+        });
+    })
+    console.log(result);
 });

@@ -47,7 +47,7 @@ router.post("/post-TableUser", (req, res) => {
 router.put("/put-TableUser/all/:id", (req, res) => {
     let id = +req.params.id;
     let image: User = req.body;
-    let sql = "UPDATE `user` set (`profile` ) WHERE `imid` VALUES (?,?)";
+    let sql = "UPDATE `user` set (`profile` ) WHERE `uid` VALUES (?,?)";
     sql = mysql.format(sql, [
         image.profile,
         id
@@ -67,7 +67,7 @@ router.put("/put-TableUser/:id",async(req, res)=>{
 
     //Query original data by id
     let UserModel : User | undefined;
-    let sql = mysql.format("select * from user where imid = ?",[id]);
+    let sql = mysql.format("select * from user where uid = ?",[id]);
     let result = await queryPromise(sql);
     const jsonStr = JSON.stringify(result);
     const jsonObj = JSON.parse(jsonStr);
@@ -76,7 +76,7 @@ router.put("/put-TableUser/:id",async(req, res)=>{
 
     //merge recive
     const updateUser = {...UserModel, ...user};
-    sql ="update `user` set `profile`= ? where `imid`= ?";
+    sql ="update `user` set `profile`= ? where `uid`= ?";
 
     //update
     sql = mysql.format(sql, [

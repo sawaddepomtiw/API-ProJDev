@@ -24,7 +24,7 @@ router.post("/postTableUser", (req, res) => {
     if (req.query){
                 
         const user: User = req.body;
-        let sql = "INSERT INTO `user`(`email`, `password`, `name`, 'profile', `role`) VALUES (?,?,?,?,?)";
+        let sql = "INSERT INTO `user`(`email`, `password`, `name`, `profile`, `role`) VALUES (?,?,?,?,?)";
         sql = mysql.format(sql, [
             user.email,
             user.password,

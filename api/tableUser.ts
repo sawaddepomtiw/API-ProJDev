@@ -19,7 +19,7 @@ router.get("/get-TableUser", (req, res) => {
     }
 });
 // post user
-router.post("/post-TableUser", (req, res) => {
+router.post("/postTableUser", (req, res) => {
 
     if (req.query){
                 

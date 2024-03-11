@@ -5,7 +5,6 @@ export interface User {
     profile:  string;
     role:     string;
     uid:      number;
-    url:      string;
 }
 
 export interface ImageModel {

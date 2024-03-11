@@ -110,7 +110,7 @@ router.put("/put-TableUser/Name/:id",async(req, res)=>{
 
     //update
     sql = mysql.format(sql, [
-        updateUser.profile, id
+        updateUser.name, id
     ]);
     dbconn.query(sql, (err, result)=>{
         if (err) throw err;

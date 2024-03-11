@@ -9,10 +9,10 @@ import cors from 'cors';
 import bodyParser from "body-parser";
 
 export const app = express();
+app.use(cors({ origin: "*" }));
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors({ origin: "*" }));
 
 app.use("/", index);
 app.use("/send-otp", serverEmail);

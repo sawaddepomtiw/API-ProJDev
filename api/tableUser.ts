@@ -120,7 +120,7 @@ router.put("/put-TableUser/Name/:id",async(req, res)=>{
     })
     console.log(result);
 });
-router.put("/put-TableUser/Pass/:id",async(req, res)=>{
+router.put("/put-TableUser/Password/:id",async(req, res)=>{
     //1 
     const id = req.params.id; //ตัวแปรโง่
     let user : User = req.body; //อีกตัว

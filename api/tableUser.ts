@@ -24,12 +24,13 @@ router.post("/post-TableUser", (req, res) => {
     if (req.query){
                 
         const user: User = req.body;
-        let sql = "INSERT INTO `user`(`email`, `password`, `name`, `role`) VALUES (?,?,?,?)";
+        let sql = "INSERT INTO `user`(`email`, `password`, `name`, `role`,'url') VALUES (?,?,?,?,?)";
         sql = mysql.format(sql, [
             user.email,
             user.password,
             user.name,
-            user.role = 'user'
+            user.role = 'user',
+            user.url = 'https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png'
         ]);
         dbconn.query(sql, (err, result) =>{
             if (err) throw err;

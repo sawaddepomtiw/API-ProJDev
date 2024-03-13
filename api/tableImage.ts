@@ -143,7 +143,7 @@ router.get("/count/:uid", (req, res) => {
 // });
 
 
-router.delete("delete-tableImage/:id", (req, res) => {
+router.delete("/delete-tableImage/:id", (req, res) => {
     let id = +req.params.id;
     dbconn.query("delete from image, vote where image.imid = vote.imid and image.imid=? and vote.imid=? ", [id,id], (err, result) => {
        if (err) throw err;

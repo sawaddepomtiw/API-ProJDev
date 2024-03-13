@@ -10,3 +10,4 @@ export const dbconn = mysql.createPool({
 });
 
 export const queryPromise = util.promisify(dbconn.query).bind(dbconn);
+export const queryAsync = util.promisify(dbconn.query).bind(dbconn);

@@ -1,8 +1,7 @@
+import { ImageModel } from './../MODEL/getpostputdelete';
 import mysql from 'mysql';
-import { ImageModel } from "../MODEL/getpostputdelete";
-import { dbconn, queryPromise } from "../dbconnects";
+import { dbconn, queryAsync, queryPromise } from "../dbconnects";
 import express from "express";
-import { deleteObject } from "firebase/storage";
 export const router = express.Router();
 
 
@@ -153,3 +152,37 @@ router.delete("delete-tableImage/:id", (req, res) => {
          .json({ affected_row: result.affectedRows });
     });
   });
+
+router.put("/put-tableImage/dynamic/:id", async (req, res) => {
+    let id = +req.params.id;
+    let image : ImageModel = req.body; 
+    let imageOriginal: ImageModel | undefined;
+  
+    let sql = mysql.format("select * from image where imid = ?", [id]);
+  
+    let result = await queryAsync(sql);
+    const rawData = JSON.parse(JSON.stringify(result));
+    // console.log(rawData);
+    imageOriginal = rawData[0] as ImageModel;
+    // console.log(imageOriginal);
+  
+    let updateImage = {...imageOriginal, ...image};
+    // console.log(image);
+    // console.log(updateImage);
+
+    sql ="update `image` set `uid`= ? ,`name`= ?, `score`= ?, `voteTOTAL`= ?, `url`= ? where `imid`= ?";
+    
+    sql = mysql.format(sql, [
+    updateImage.uid, 
+    updateImage.name, 
+    updateImage.score, 
+    updateImage.voteTOTAL,
+    updateImage.url,
+    id
+    ]);
+      dbconn.query(sql, (err, result) => {
+        if (err) throw err;
+        res.status(201).json({ affected_row: result.affectedRows });
+      });
+  });
+

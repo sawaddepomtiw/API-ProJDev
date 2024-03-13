@@ -145,13 +145,14 @@ router.get("/count/:uid", (req, res) => {
 
 router.delete("/delete-tableImage/:id", (req, res) => {
     let id = +req.params.id;
-    dbconn.query("delete from image, vote where image.imid = vote.imid and image.imid=? and vote.imid=? ", [id,id], (err, result) => {
+    dbconn.query("DELETE image, vote FROM image JOIN vote ON image.imid = vote.imid WHERE image.imid = ? AND vote.imid = ?", [id, id], (err, result) => {
        if (err) throw err;
        res
          .status(200)
          .json({ affected_row: result.affectedRows });
     });
-  });
+});
+
 
 router.put("/put-tableImage/dynamic/:id", async (req, res) => {
     let id = +req.params.id;

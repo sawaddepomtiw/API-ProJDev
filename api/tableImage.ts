@@ -165,31 +165,40 @@ router.put("/put-tableImage/dynamic/:id", async (req, res) => {
     let image : ImageModel = req.body; 
     let imageOriginal: ImageModel | undefined;
   
-    let sql = mysql.format("select * from image where imid = ?", [id]);
+    let sql = mysql.format("SELECT * FROM image WHERE imid = ?", [id]);
   
     let result = await queryAsync(sql);
     const rawData = JSON.parse(JSON.stringify(result));
-    // console.log(rawData);
     imageOriginal = rawData[0] as ImageModel;
-    // console.log(imageOriginal);
   
     let updateImage = {...imageOriginal, ...image};
-    // console.log(image);
-    // console.log(updateImage);
 
-    sql ="update `image` set `uid`= ? ,`name`= ?, `score`= ?, `voteTOTAL`= ?, `url`= ? where `imid`= ?";
+    sql = "UPDATE `image` SET `uid` = ?, `name` = ?, `score` = ?, `voteTOTAL` = ?, `url` = ? WHERE `imid` = ?";
     
     sql = mysql.format(sql, [
-    updateImage.uid, 
-    updateImage.name, 
-    updateImage.score, 
-    updateImage.voteTOTAL,
-    updateImage.url,
-    id
+        updateImage.uid, 
+        updateImage.name, 
+        updateImage.score , 
+        updateImage.voteTOTAL ,
+        updateImage.url,
+        id
     ]);
-      dbconn.query(sql, (err, result) => {
+
+    dbconn.query(sql, (err, result) => {
         if (err) throw err;
-        res.status(201).json({ affected_row: result.affectedRows });
-      });
-  });
+        if (result) {
+            sql = "DELETE FROM vote WHERE `imid` = ?";
+            sql = mysql.format(sql, [id]);
+            dbconn.query(sql, (err, resultdel) => {
+                if (err) throw err;
+                res.status(201).json({ 
+                    update_affected_rows: result.affectedRows,
+                    delete_affected_rows: resultdel.affectedRows
+                });
+            });
+        }
+    
+    });
+});
+
 

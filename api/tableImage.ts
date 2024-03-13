@@ -145,13 +145,19 @@ router.get("/count/:uid", (req, res) => {
 
 router.delete("/delete-tableImage/:id", (req, res) => {
     let id = +req.params.id;
-    dbconn.query("DELETE image, vote FROM image JOIN vote ON image.imid = vote.imid WHERE image.imid = ? AND vote.imid = ?", [id, id], (err, result) => {
-       if (err) throw err;
-       res
-         .status(200)
-         .json({ affected_row: result.affectedRows });
+    dbconn.query("DELETE image, vote \
+    FROM image \
+    LEFT JOIN vote ON image.imid = vote.imid \
+    WHERE image.imid = ? AND (vote.imid = ? OR vote.imid IS NULL)", [id, id], (err, result) => {
+        if (err) {
+            console.error("Error deleting data:", err);
+            res.status(500).json({ error: "An error occurred while deleting data" });
+            return;
+        }
+       res.status(200).json({ affected_row: result.affectedRows });
     });
 });
+
 
 
 router.put("/put-tableImage/dynamic/:id", async (req, res) => {

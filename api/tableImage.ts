@@ -2,8 +2,9 @@ import mysql from 'mysql';
 import { ImageModel } from "../MODEL/getpostputdelete";
 import { dbconn, queryPromise } from "../dbconnects";
 import express from "express";
-
+import { deleteObject } from "firebase/storage";
 export const router = express.Router();
+
 
 router.get("/select-all", (req, res)=>{
     if (req.query){

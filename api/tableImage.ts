@@ -123,7 +123,14 @@ router.get("/count/:uid", (req, res) => {
 });
 
 // router.get("/order", (req, res) => {
-//     dbconn.query("SELECT * FROM vote WHERE DATE(timestamp) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY)) ORDER BY score DESC;"
+//     dbconn.query("SELECT image.imid, \
+//     IFNULL(MAX(vote.timestamp), '') AS latest_timestamp, \
+//     image.score AS new_score, \
+//     IFNULL((SELECT vote.score FROM vote WHERE vote.imid = image.imid ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score \
+//     FROM image \
+//     LEFT JOIN vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY \
+//     GROUP BY image.imid \
+//     ORDER BY image.score DESC;"
 //     , (err, result) => {
 //         if (err) throw err;
 //         let orderedArray = [];
@@ -135,43 +142,10 @@ router.get("/count/:uid", (req, res) => {
 //     });
 // });
 
-// router.get("/order/yesterday", (req, res) => {
-//     // ดึงข้อมูลเมื่อวานจากฐานข้อมูล ในตัวอย่างนี้จะเรียกด้วยคำสั่ง SQL
-//     dbconn.query("SELECT * FROM vote WHERE DATE(timestamp) = DATE(DATE_SUB(NOW(), INTERVAL 1 DAY)) ORDER BY score DESC;",
-//     (err, yesterdayResult) => {
-//         if (err) throw err;
-
-//         // ดึงข้อมูลปัจจุบันจากฐานข้อมูล
-//         dbconn.query("SELECT * FROM image ORDER BY score DESC;",
-//         (err, currentResult) => {
-//             if (err) throw err;
-            
-//             // สร้าง Map เพื่อเก็บข้อมูล rank ของเมื่อวาน
-//             const yesterdayRanksMap = new Map();
-//             yesterdayResult.forEach((resultItem: { id: any; }, resultIndex: number) => {
-//                 yesterdayRanksMap.set(resultItem.id, resultIndex + 1);
-//             });
-            
-//             // เรียงลำดับตามลำดับที่ได้จากคำสั่ง SQL สำหรับข้อมูลปัจจุบัน
-//             const orderedArray = currentResult.map((item: { id: any; }, index: number) => {
-//                 // เพิ่มข้อมูล rank ปัจจุบัน
-//                 const yesterdayRank = yesterdayRanksMap.get(item.id);
-//                 return {
-//                     ...item,
-//                     yesterday_rank: yesterdayRank || null,
-//                     current_rank: index + 1
-//                 };
-//             });
-            
-//             // ส่งข้อมูลที่เรียงลำดับแล้วกลับไปยัง client
-//             res.json(orderedArray);
-//         });
-//     });
-// });
 
 router.delete("delete-tableImage/:id", (req, res) => {
     let id = +req.params.id;
-    dbconn.query("delete from image where imid = ?", [id], (err, result) => {
+    dbconn.query("delete from image, vote where image.imid = vote.imid and image.imid=? and vote.imid=? ", [id,id], (err, result) => {
        if (err) throw err;
        res
          .status(200)

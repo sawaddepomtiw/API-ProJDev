@@ -40,3 +40,15 @@ router.post("/insertVote", (req, res) => {
         res.status(201).send("error!");
     }
 });
+
+router.get("/staticVote", (req, res) =>{
+    if (req.query){
+
+        const sql = "select * from vote";
+        dbconn.query(sql, (err, result) => {
+            res.status(201).json(result);
+        });
+    } else {
+        res.status(201).send("error!");
+    }
+});

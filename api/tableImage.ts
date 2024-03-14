@@ -3,6 +3,7 @@ import mysql from 'mysql';
 import { dbconn, queryAsync, queryPromise } from "../dbconnects";
 import express from "express";
 export const router = express.Router();
+const Chart = require('chart.js');
 
 
 router.get("/select-all", (req, res)=>{
@@ -240,9 +241,10 @@ router.get("/order", (req, res) => {
     );
 });
 
-router.get("/order/graph", (req, res) => {
+router.get("/order/graph/:id", (req, res) => {
     dbconn.query(`
             SELECT 
+            user.uid,
             image.imid, 
             image.score AS new_score, 
             IFNULL((SELECT vote.score 
@@ -285,30 +287,23 @@ router.get("/order/graph", (req, res) => {
         FROM 
             image 
         LEFT JOIN 
-            vote ON image.imid = vote.imid 
+            vote ON image.imid = vote.imid
+        LEFT JOIN 
+            user ON image.uid = user.uid
+        WHERE
+            user.uid = ?
         GROUP BY 
             image.imid 
         ORDER BY 
-            new_score DESC`,
+            new_score DESC`, [req.params.id], // ใช้ req.params.id เพื่อรับค่า id จาก URL
         (err, result) => {
             if (err) {
                 console.error(err);
                 res.status(500).send("Error retrieving data from database");
                 return;
             }
-            // Send the result back to the client
+            // ส่งผลลัพธ์กลับไปยังไคลเอนต์
             res.json(result);
-            // Extract new_score and last_vote_score from the result
-            const new_score = result[0].new_score;
-            const last_vote_score = {
-                 last_vote_score_day_1 : result[0].latest_vote_score_day_1,
-                 last_vote_score_day_2 : result[0].latest_vote_score_day_2,
-                 last_vote_score_day_3 : result[0].latest_vote_score_day_3,
-                 last_vote_score_day_4 : result[0].latest_vote_score_day_4,
-                 last_vote_score_day_5 : result[0].latest_vote_score_day_5,
-                 last_vote_score_day_6 : result[0].latest_vote_score_day_6,
-                 last_vote_score_day_7 : result[0].latest_vote_score_day_7,
-            }
         }
     );
 });

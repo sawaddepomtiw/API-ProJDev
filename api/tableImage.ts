@@ -145,26 +145,6 @@ router.get("/count/:uid", (req, res) => {
 //     });
 // });
 
-router.get("/order", (req, res) => {
-    dbconn.query("SELECT image.imid, \
-    IFNULL(MAX(vote.timestamp), '') AS latest_timestamp, \
-    image.score AS new_score, \
-    IFNULL((SELECT vote.score FROM vote WHERE vote.imid = image.imid ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score \
-    FROM image \
-    LEFT JOIN vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY \
-    GROUP BY image.imid \
-    ORDER BY image.score DESC;"
-    , (err, result) => {
-        if (err) {
-            // Handle error
-            console.error(err);
-            res.status(500).send("Error retrieving data from database");
-            return;
-        }
-        // Send the result back to the client
-        res.json(result);
-    });
-});
 
 router.delete("/delete-tableImage/:id", (req, res) => {
     let id = +req.params.id;
@@ -177,7 +157,7 @@ router.delete("/delete-tableImage/:id", (req, res) => {
             res.status(500).json({ error: "An error occurred while deleting data" });
             return;
         }
-       res.status(200).json({ affected_row: result.affectedRows });
+        res.status(200).json({ affected_row: result.affectedRows });
     });
 });
 
@@ -187,15 +167,15 @@ router.put("/put-tableImage/dynamic/:id", async (req, res) => {
     let id = +req.params.id;
     let image : ImageModel = req.body; 
     let imageOriginal: ImageModel | undefined;
-  
+    
     let sql = mysql.format("SELECT * FROM image WHERE imid = ?", [id]);
-  
+    
     let result = await queryAsync(sql);
     const rawData = JSON.parse(JSON.stringify(result));
     imageOriginal = rawData[0] as ImageModel;
-  
+    
     let updateImage = {...imageOriginal, ...image};
-
+    
     sql = "UPDATE `image` SET `uid` = ?, `name` = ?, `score` = ?, `voteTOTAL` = ?, `url` = ? WHERE `imid` = ?";
     
     sql = mysql.format(sql, [
@@ -206,7 +186,7 @@ router.put("/put-tableImage/dynamic/:id", async (req, res) => {
         updateImage.url,
         id
     ]);
-
+    
     dbconn.query(sql, (err, result) => {
         if (err) throw err;
         if (result) {
@@ -220,8 +200,31 @@ router.put("/put-tableImage/dynamic/:id", async (req, res) => {
                 });
             });
         }
-    
+        
     });
 });
 
-
+router.get("/order", (req, res) => {
+    dbconn.query("SELECT image.imid, \
+    IFNULL(MAX(vote.timestamp), '') AS latest_timestamp, \
+    image.score AS new_score, \
+    IFNULL((SELECT vote.score FROM vote WHERE vote.imid = image.imid ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score, \
+    image.url\
+    FROM image \
+    LEFT JOIN vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY \
+    GROUP BY image.imid \
+    ORDER BY image.score DESC;"
+    , (err, result) => {
+        if (err) {
+            // Handle error
+            console.error(err);
+            res.status(500).send("Error retrieving data from database");
+            return;
+        }
+        // Send the result back to the client
+        res.json(result);
+        // เรียกใช้งานตัวแปร new_score และ last_vote_score จากผลลัพธ์
+        const new_score = result[0].new_score;
+        const last_vote_score = result[0].latest_vote_score;
+    });
+});

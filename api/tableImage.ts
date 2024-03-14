@@ -220,7 +220,7 @@ router.get("/order", (req, res) => {
         FROM 
             image 
         LEFT JOIN 
-            vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY 
+            vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 1 DAY 
         GROUP BY 
             image.imid 
         ORDER BY 

@@ -205,27 +205,37 @@ router.put("/put-tableImage/dynamic/:id", async (req, res) => {
 });
 
 router.get("/order", (req, res) => {
-    dbconn.query("SELECT image.imid, \
-    IFNULL(MAX(vote.timestamp), '') AS latest_timestamp, \
-    image.score AS new_score, \
-    IFNULL((SELECT vote.score FROM vote WHERE vote.imid = image.imid ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score, \
-    image.url,\
-    image.name\
-    FROM image \
-    LEFT JOIN vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY \
-    GROUP BY image.imid \
-    ORDER BY image.score DESC;"
-    , (err, result) => {
-        if (err) {
-            // Handle error
-            console.error(err);
-            res.status(500).send("Error retrieving data from database");
-            return;
+    dbconn.query(`
+        SELECT 
+            image.imid, 
+            IFNULL(MAX(vote.timestamp), '') AS latest_timestamp, 
+            image.score AS new_score, 
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 3 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score, 
+            image.url,
+            image.name
+        FROM 
+            image 
+        LEFT JOIN 
+            vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY 
+        GROUP BY 
+            image.imid 
+        ORDER BY 
+            image.score DESC`,
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send("Error retrieving data from database");
+                return;
+            }
+            // Send the result back to the client
+            res.json(result);
+            // Extract new_score and last_vote_score from the result
+            const new_score = result[0].new_score;
+            const last_vote_score = result[0].latest_vote_score;
         }
-        // Send the result back to the client
-        res.json(result);
-        // เรียกใช้งานตัวแปร new_score และ last_vote_score จากผลลัพธ์
-        const new_score = result[0].new_score;
-        const last_vote_score = result[0].latest_vote_score;
-    });
+    );
 });

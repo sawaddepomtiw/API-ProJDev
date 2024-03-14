@@ -239,3 +239,76 @@ router.get("/order", (req, res) => {
         }
     );
 });
+
+router.get("/order/graph", (req, res) => {
+    dbconn.query(`
+            SELECT 
+            image.imid, 
+            image.score AS new_score, 
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 1 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_1,
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_2,
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 3 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_3,
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 4 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_4,
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 5 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_5,
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 6 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_6,
+            IFNULL((SELECT vote.score 
+                    FROM vote 
+                    WHERE vote.imid = image.imid 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 7 DAY 
+                    ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score_day_7,
+            image.url,
+            image.name
+        FROM 
+            image 
+        LEFT JOIN 
+            vote ON image.imid = vote.imid 
+        GROUP BY 
+            image.imid 
+        ORDER BY 
+            new_score DESC`,
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send("Error retrieving data from database");
+                return;
+            }
+            // Send the result back to the client
+            res.json(result);
+            // Extract new_score and last_vote_score from the result
+            const new_score = result[0].new_score;
+            const last_vote_score = {
+                 last_vote_score_day_1 : result[0].latest_vote_score_day_1,
+                 last_vote_score_day_2 : result[0].latest_vote_score_day_2,
+                 last_vote_score_day_3 : result[0].latest_vote_score_day_3,
+                 last_vote_score_day_4 : result[0].latest_vote_score_day_4,
+                 last_vote_score_day_5 : result[0].latest_vote_score_day_5,
+                 last_vote_score_day_6 : result[0].latest_vote_score_day_6,
+                 last_vote_score_day_7 : result[0].latest_vote_score_day_7,
+            }
+        }
+    );
+});

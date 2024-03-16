@@ -214,7 +214,7 @@ router.get("/order", (req, res) => {
             IFNULL((SELECT vote.score 
                     FROM vote 
                     WHERE vote.imid = image.imid 
-                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 3 DAY 
+                    AND DATE(vote.timestamp) = CURDATE() - INTERVAL 1 DAY 
                     ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score, 
             image.url,
             image.name

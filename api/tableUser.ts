@@ -18,6 +18,20 @@ router.get("/get-TableUser", (req, res) => {
         res.status(201).send("error!");
     }
 });
+
+router.get("/get-TableUser/getUid", (req, res) => {
+    const { email } = req.body;
+    const sql = "SELECT uid FROM user WHERE email = ?";
+    dbconn.query(sql, [email], (err, result) => {
+        if (err) {
+            console.error("Error executing query:", err);
+            res.status(500).send("Internal server error");
+            return;
+        }
+        res.status(200).json(result);   
+    });
+});
+
 // post user
 router.post("/post-TableUser", (req, res) => {
 

@@ -74,3 +74,28 @@ router.get("/staticVote", (req, res) =>{
         res.status(201).send("error!");
     }
 });
+router.get("/lastTimeVote/:id", (req, res) =>{
+    const userId = req.params.id;
+    
+    if (userId) {
+        const sql = `
+            SELECT MAX(timestamp) AS last_time
+            FROM vote
+            WHERE uid = ?
+        `;
+        dbconn.query(sql, [userId], (err, result) => {
+            if (err) {
+                res.status(500).json({ error: "Internal Server Error" });
+                return;
+            }
+            // Check if any result is returned
+            if (result.length > 0) {
+                res.status(200).json(result[0]); // Return the first (and only) row
+            } else {
+                res.status(404).json({ error: "User not found or no votes found for the user" });
+            }
+        });
+    } else {
+        res.status(400).json({ error: "Missing user id in URL parameter" });
+    }
+});

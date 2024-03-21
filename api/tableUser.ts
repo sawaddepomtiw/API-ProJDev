@@ -28,7 +28,7 @@ router.get("/get-TableUser/getUid", (req, res) => {
             res.status(500).send("Internal server error");
             return;
         }
-        res.status(200).json(result);   
+        res.status(200).json(result[0]);   
     });
 });
 

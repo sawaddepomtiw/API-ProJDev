@@ -20,7 +20,7 @@ router.get("/get-TableUser", (req, res) => {
 });
 
 router.get("/get-TableUser/getUid", (req, res) => {
-    const { email } = req.body;
+    const { email } = req.query;
     const sql = "SELECT uid FROM user WHERE email = ?";
     dbconn.query(sql, [email], (err, result) => {
         if (err) {

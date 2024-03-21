@@ -150,3 +150,33 @@ router.put("/put-TableUser/Password/:id",async(req, res)=>{
     })
     console.log(result);
 });
+router.put("/put-TableUser/Timeset/:id",async(req, res)=>{
+    //1 
+    const id = req.params.id; //ตัวแปรโง่
+    let user : User = req.body; //อีกตัว
+
+    //Query original data by id
+    let UserModel : User | undefined;
+    let sql = mysql.format("select * from user where uid = ?",[id]);
+    let result = await queryPromise(sql);
+    const jsonStr = JSON.stringify(result);
+    const jsonObj = JSON.parse(jsonStr);
+    const rawData = jsonObj;
+    UserModel = rawData[0];
+
+    //merge recive
+    const updateUser = {...UserModel, ...user};
+    sql ="update `user` set `profile`= ? where `uid`= ? and `role` = 'admin'";
+
+    //update
+    sql = mysql.format(sql, [
+        updateUser.profile, id
+    ]);
+    dbconn.query(sql, (err, result)=>{
+        if (err) throw err;
+        res.status(200).json({
+            affected_row: result.affectedRows
+        });
+    })
+    console.log(result);
+});

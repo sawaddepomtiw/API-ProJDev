@@ -77,9 +77,12 @@ router.get("/staticVote", (req, res) =>{
 router.get("/lastTimeVote/:id", (req, res) =>{
     const userId = req.params.id;
     const sql = `
-        SELECT MAX(timestamp) AS last_time
-        FROM vote
-        WHERE uid = ?
+    SELECT imid,
+    timestamp AS last_time
+    FROM vote
+    WHERE uid = 13
+        AND DATE(timestamp) = CURRENT_DATE
+        and imid = 60
     `;
     dbconn.query(sql, [userId], (err, result) => {
         if (err) {

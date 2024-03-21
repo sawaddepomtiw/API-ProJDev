@@ -74,17 +74,18 @@ router.get("/staticVote", (req, res) =>{
         res.status(201).send("error!");
     }
 });
-router.get("/lastTimeVote/:id", (req, res) =>{
+router.get("/lastTimeVote/:id/:imid", (req, res) =>{
     const userId = req.params.id;
+    const imageID = req.params.imid;
     const sql = `
     SELECT imid,
     timestamp AS last_time
     FROM vote
-    WHERE uid = 13
+    WHERE uid = ?
         AND DATE(timestamp) = CURRENT_DATE
-        and imid = 60
+        and imid = ?
     `;
-    dbconn.query(sql, [userId], (err, result) => {
+    dbconn.query(sql, [userId, imageID], (err, result) => {
         if (err) {
             res.status(500).json({ error: "Internal Server Error" });
             return;
@@ -96,5 +97,4 @@ router.get("/lastTimeVote/:id", (req, res) =>{
             res.status(404).json({ error: "User not found or no votes found for the user" });
         }
     });
-    
 });

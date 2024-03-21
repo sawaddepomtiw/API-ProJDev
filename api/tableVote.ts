@@ -93,8 +93,6 @@ router.get("/lastTimeVote/:id/:imid", (req, res) =>{
         // Check if any result is returned
         if (result.length > 0) {
             res.status(200).json(result[0]); // Return the first (and only) row
-        } else {
-            res.status(404).json({ error: "User not found or no votes found for the user" });
-        }
+        } 
     });
 });

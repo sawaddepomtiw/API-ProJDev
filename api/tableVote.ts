@@ -91,8 +91,6 @@ router.get("/lastTimeVote/:id/:imid", (req, res) =>{
             return;
         }
         // Check if any result is returned
-        if (result.length > 0) {
-            res.status(200).json(result[0]); // Return the first (and only) row
-        } 
+        res.status(200).json(result[0]); // Return the first (and only) row
     });
 });

@@ -31,6 +31,18 @@ router.get("/get-TableUser/getUid", (req, res) => {
         res.status(200).json(result[0]);   
     });
 });
+router.get("/get-TableUser/getProfileAdmin", (req, res) => {
+    const { email } = req.query;
+    const sql = "SELECT profile FROM user WHERE role = 'admin'";
+    dbconn.query(sql, [email], (err, result) => {
+        if (err) {
+            console.error("Error executing query:", err);
+            res.status(500).send("Internal server error");
+            return;
+        }
+        res.status(200).json(result[0]);   
+    });
+});
 
 // post user
 router.post("/post-TableUser", (req, res) => {

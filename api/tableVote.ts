@@ -79,7 +79,7 @@ router.get("/lastTimeVote/:id/:imid", (req, res) =>{
     const imageID = req.params.imid;
     const sql = `
     SELECT imid,
-    timestamp AS last_time
+    MAX(timestamp) AS last_time
     FROM vote
     WHERE uid = ?
         AND DATE(timestamp) = CURRENT_DATE

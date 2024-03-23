@@ -94,3 +94,23 @@ router.get("/lastTimeVote/:id/:imid", (req, res) =>{
         res.status(200).json(result[0]); // Return the first (and only) row
     });
 });
+router.get("/lastTimeVote/:imid", (req, res) =>{
+    // const userId = "NULL";
+    const imageID = req.params.imid;
+    const sql = `
+    SELECT imid,
+    timestamp AS last_time
+    FROM vote
+    WHERE uid is NULL
+        AND DATE(timestamp) = CURRENT_DATE
+        and imid = ?
+    `;
+    dbconn.query(sql, [ imageID], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: "Internal Server Error" });
+            return;
+        }
+        // Check if any result is returned
+        res.status(200).json(result[0]); // Return the first (and only) row
+    });
+});

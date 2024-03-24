@@ -3,7 +3,6 @@ import mysql from 'mysql';
 import { dbconn, queryAsync, queryPromise } from "../dbconnects";
 import express from "express";
 export const router = express.Router();
-const Chart = require('chart.js');
 
 
 router.get("/select-all", (req, res) => {
@@ -42,11 +41,9 @@ router.put("update/:id", (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-    //1 
-    const id = req.params.id; //ตัวแปรโง่    
-    let image: ImageModel = req.body; //อีกตัว
+    const id = req.params.id; 
+    let image: ImageModel = req.body;
 
-    //Query original data by id
     let imageModel: ImageModel | undefined;
     let sql = mysql.format("select * from image where imid = ?", [id]);
     let result = await queryPromise(sql);
@@ -55,11 +52,9 @@ router.put("/:id", async (req, res) => {
     const rawData = jsonObj;
     imageModel = rawData[0];
 
-    //merge recive
     const updateTrip = { ...imageModel, ...image };
     sql = "update `image` set `score`= ?, `voteTOTAL`= ? where `imid`= ?";
 
-    //update
     sql = mysql.format(sql, [
         updateTrip.score, updateTrip.voteTOTAL, id
     ]);
@@ -115,8 +110,6 @@ router.post("/insertImg", (req, res) => {
     }
 });
 
-// let asql = "SELECT * FROM image ORDER BY score DESC;";
-
 
 router.get("/count/:uid", (req, res) => {
     let uid = req.params.uid;
@@ -125,26 +118,6 @@ router.get("/count/:uid", (req, res) => {
         res.json(result[0]);
     });
 });
-
-// router.get("/order", (req, res) => {
-//     dbconn.query("SELECT image.imid, \
-//     IFNULL(MAX(vote.timestamp), '') AS latest_timestamp, \
-//     image.score AS new_score, \
-//     IFNULL((SELECT vote.score FROM vote WHERE vote.imid = image.imid ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score \
-//     FROM image \
-//     LEFT JOIN vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 2 DAY \
-//     GROUP BY image.imid \
-//     ORDER BY image.score DESC;"
-//     , (err, result) => {
-//         if (err) throw err;
-//         let orderedArray = [];
-//         for (let i = 0; i < result.length; i++) {
-//             result[i].order = i + 1;
-//             orderedArray.push(result[i]);
-//         }
-//         res.json(orderedArray);
-//     });
-// });
 
 
 router.delete("/delete-tableImage/:id", (req, res) => {
@@ -235,9 +208,7 @@ router.get("/order", (req, res) => {
                 res.status(500).send("Error retrieving data from database");
                 return;
             }
-            // Send the result back to the client
             res.json(result);
-            // Extract new_score and last_vote_score from the result
             const new_score = result[0].new_score;
             const last_vote_score = result[0].latest_vote_score;
         }
@@ -298,14 +269,13 @@ router.get("/order/graph/:id", (req, res) => {
         GROUP BY 
             image.imid 
         ORDER BY 
-            new_score DESC`, [req.params.id], // ใช้ req.params.id เพื่อรับค่า id จาก URL
+            new_score DESC`, [req.params.id], 
         (err, result) => {
             if (err) {
                 console.error(err);
                 res.status(500).send("Error retrieving data from database");
                 return;
             }
-            // ส่งผลลัพธ์กลับไปยังไคลเอนต์
             res.json(result);
         }
     );

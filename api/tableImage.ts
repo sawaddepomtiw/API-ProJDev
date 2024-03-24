@@ -190,9 +190,9 @@ router.get("/order", (req, res) => {
                     AND DATE(vote.timestamp) = CURDATE() - INTERVAL 1 DAY 
                     ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score, 
             image.url,
-            image.name,
+            image.name
         FROM 
-            image 
+            image
         LEFT JOIN 
             vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 1 DAY 
         GROUP BY 

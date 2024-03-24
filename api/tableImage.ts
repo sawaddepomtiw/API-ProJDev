@@ -191,11 +191,8 @@ router.get("/order", (req, res) => {
                     ORDER BY vote.timestamp DESC LIMIT 1), '') AS latest_vote_score, 
             image.url,
             image.name,
-            uploader.profile
         FROM 
             image 
-        LEFT JOIN 
-            user AS uploader ON image.uid = uploader.uid
         LEFT JOIN 
             vote ON image.imid = vote.imid AND DATE(vote.timestamp) = CURDATE() - INTERVAL 1 DAY 
         GROUP BY 

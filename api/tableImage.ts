@@ -5,6 +5,7 @@ import express from "express";
 export const router = express.Router();
 
 //  .........................get...................................
+// get all image
 router.get("/select-all", (req, res) => {
     if (req.query) {
 
@@ -15,7 +16,7 @@ router.get("/select-all", (req, res) => {
         res.status(201).send("error!");
     }
 });
-
+// get all image where id
 router.get("/select/:id", (req, res) => {
     let id = req.params.id;
     dbconn.query("SELECT * FROM image WHERE imid = ?", [id], (err, result) => {
@@ -23,7 +24,7 @@ router.get("/select/:id", (req, res) => {
         res.json(result);
     });
 });
-
+// count image where id
 router.get("/count/:uid", (req, res) => {
     let uid = req.params.uid;
     dbconn.query("SELECT COUNT(*) AS count FROM image WHERE uid = ?", [uid], (err, result) => {
@@ -31,7 +32,7 @@ router.get("/count/:uid", (req, res) => {
         res.json(result[0]);
     });
 });
-
+// get email
 router.get("/selectemail", (req, res) => {
     dbconn.query(
         "SELECT * FROM user WHERE email = ?",
@@ -42,7 +43,7 @@ router.get("/selectemail", (req, res) => {
         }
     );
 });
-
+// get yesterday login
 router.get("/order", (req, res) => {
     dbconn.query(`
             SELECT 
@@ -80,6 +81,7 @@ router.get("/order", (req, res) => {
     );
 });
 
+// get data graph
 router.get("/order/graph/:id", (req, res) => {
     dbconn.query(`
             SELECT 
@@ -149,6 +151,7 @@ router.get("/order/graph/:id", (req, res) => {
 //  .........................get...................................
 
 // ............................. post .................................
+// insert image
 router.post("/insertImg", (req, res) => {
 
     if (req.query) {
@@ -185,7 +188,7 @@ router.post("/insertImg", (req, res) => {
 // ............................. post .................................
 
 // .......................... put .........................
-
+// main
 router.put("update/:id", (req, res) => {
     let id = +req.params.id;
     let image: ImageModel = req.body;

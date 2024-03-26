@@ -5,58 +5,14 @@ import mysql from "mysql";
 
 export const router = express.Router();
 
+// ........................ get .......................
+
 router.get("/selectVote", (req, res) =>{
     if (req.query){
 
         const sql = "select * from vote";
         dbconn.query(sql, (err, result) => {
             res.status(201).json(result);
-        });
-    } else {
-        res.status(201).send("error!");
-    }
-});
-
-router.post("/insertVote", (req, res) => {
-
-    if (req.query){
-
-        const vote: VoteModel = req.body;
-        let sql = "INSERT INTO vote(uid, imid, status, score) VALUES (?,?,?,?)";
-        sql = mysql.format(sql, [
-            vote.uid,
-            vote.imid,
-            vote.status,
-            vote.score
-        ]);
-        dbconn.query(sql, (err, result) =>{
-            if (err) throw err;
-            res.status(201).json({
-                affected_rows: result.affectedRows,
-                last_idx: result.insertId
-            });
-        });
-    } else {
-        res.status(201).send("error!");
-    }
-});
-router.post("/insertVote/noID", (req, res) => {
-
-    if (req.query){
-
-        const vote: VoteModel = req.body;
-        let sql = "INSERT INTO vote( imid, status, score) VALUES (?,?,?)";
-        sql = mysql.format(sql, [
-            vote.imid,
-            vote.status,
-            vote.score
-        ]);
-        dbconn.query(sql, (err, result) =>{
-            if (err) throw err;
-            res.status(201).json({
-                affected_rows: result.affectedRows,
-                last_idx: result.insertId
-            });
         });
     } else {
         res.status(201).send("error!");
@@ -114,3 +70,55 @@ router.get("/lastTimeVote/:imid", (req, res) =>{
         res.status(200).json(result[0]); // Return the first (and only) row
     });
 });
+
+// ........................ get .......................
+
+// ........................ post .......................
+
+router.post("/insertVote", (req, res) => {
+
+    if (req.query){
+
+        const vote: VoteModel = req.body;
+        let sql = "INSERT INTO vote(uid, imid, status, score) VALUES (?,?,?,?)";
+        sql = mysql.format(sql, [
+            vote.uid,
+            vote.imid,
+            vote.status,
+            vote.score
+        ]);
+        dbconn.query(sql, (err, result) =>{
+            if (err) throw err;
+            res.status(201).json({
+                affected_rows: result.affectedRows,
+                last_idx: result.insertId
+            });
+        });
+    } else {
+        res.status(201).send("error!");
+    }
+});
+router.post("/insertVote/noID", (req, res) => {
+
+    if (req.query){
+
+        const vote: VoteModel = req.body;
+        let sql = "INSERT INTO vote( imid, status, score) VALUES (?,?,?)";
+        sql = mysql.format(sql, [
+            vote.imid,
+            vote.status,
+            vote.score
+        ]);
+        dbconn.query(sql, (err, result) =>{
+            if (err) throw err;
+            res.status(201).json({
+                affected_rows: result.affectedRows,
+                last_idx: result.insertId
+            });
+        });
+    } else {
+        res.status(201).send("error!");
+    }
+});
+
+// ........................ post .......................

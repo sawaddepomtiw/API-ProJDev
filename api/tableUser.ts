@@ -5,6 +5,8 @@ import mysql from "mysql";
 
 export const router = express.Router();
 
+// ..........................  get ......................................
+
 // get tableuser
 router.get("/get-TableUser", (req, res) => {
     
@@ -44,6 +46,10 @@ router.get("/get-TableUser/getProfileAdmin", (req, res) => {
     });
 });
 
+// ..........................  get ......................................
+
+// ..........................  post ......................................
+
 // post user
 router.post("/post-TableUser", (req, res) => {
 
@@ -69,6 +75,10 @@ router.post("/post-TableUser", (req, res) => {
         res.status(201).send("error!");
     }
 });
+
+// ..........................  post ......................................
+
+// ..........................  put ......................................
 
 router.put("/put-TableUser/all/:id", (req, res) => {
     let id = +req.params.id;
@@ -116,6 +126,7 @@ router.put("/put-TableUser/:id",async(req, res)=>{
     })
     console.log(result);
 });
+
 router.put("/put-TableUser/Name/:id",async(req, res)=>{
     //1 
     const id = req.params.id; //ตัวแปรโง่
@@ -146,6 +157,7 @@ router.put("/put-TableUser/Name/:id",async(req, res)=>{
     })
     console.log(result);
 });
+
 router.put("/put-TableUser/Password/:id",async(req, res)=>{
     //1 
     const id = req.params.id; //ตัวแปรโง่
@@ -176,6 +188,7 @@ router.put("/put-TableUser/Password/:id",async(req, res)=>{
     })
     console.log(result);
 });
+
 router.put("/put-TableUser/Timeset/:id",async(req, res)=>{
     //1 
     const id = req.params.id; //ตัวแปรโง่
@@ -206,3 +219,5 @@ router.put("/put-TableUser/Timeset/:id",async(req, res)=>{
     })
     console.log(result);
 });
+
+// ..........................  put ......................................
